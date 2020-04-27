@@ -47,7 +47,7 @@ def thresholdize(inputfile, dir_base_name):
     outputgdal = dir_base_name + "-gdal-tmp.tif"
 
     # first get geotiff data from original
-    logging.debug( string.join(["gdalinfo", os.path.abspath(inputfile)]) )
+    logging.debug("".join(["gdalinfo", os.path.abspath(inputfile)]) )
     geoText = subprocess.Popen(["gdalinfo", os.path.abspath(inputfile)], stdout=subprocess.PIPE).communicate()[0]
     pattern = re.compile(b"Upper Left\s*\(\s*([0-9\-\.]*),\s*([0-9\-\.]*).*\n.*\n.*\nLower Right\s*\(\s*([0-9\-\.]*),\s*([0-9\-\.]*).*")
     geoMatch = pattern.findall(geoText)
