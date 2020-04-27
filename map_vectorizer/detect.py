@@ -51,10 +51,10 @@ def circles(inputfile):
 
     unique_circles = []
 
-    if not (isinstance(circles, np.ndarray) and circles.shape[1] > 0):
+    if not (isinstance(circles, np.ndarray) and len(circles) > 0):
         return {"count":0, "is_outline": 0, "circles":circles}
     else:
-        total_circles = circles.shape[1]
+        total_circles = len(circles)
 
     if total_circles == 1:
         # only one circle and it is filled
