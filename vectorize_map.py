@@ -28,10 +28,10 @@ def thresholdize(inputfile, dir_base_name):
     thresholdfile = dir_base_name + "-threshold-tmp.tif"
     gimp_path = args.gimp_path
 
-    print "\n\n"
-    print "Thresholdizing:"
-    print "---------------"
-    print inputfile + " into threshold file: " + thresholdfile
+    print("\n\n")
+    print("Thresholdizing:")
+    print("---------------")
+    print(inputfile + " into threshold file: " + thresholdfile)
 
     contraststring = '(gimp-brightness-contrast drawable ' + str(brightness) + ' ' + str(contrast) + ')'
     thresholdstring = '(gimp-threshold drawable ' + str(thresholdblack) + ' ' + str(thresholdwhite) + ')'
@@ -52,22 +52,22 @@ def thresholdize(inputfile, dir_base_name):
     pattern = re.compile(r"Upper Left\s*\(\s*([0-9\-\.]*),\s*([0-9\-\.]*).*\n.*\n.*\nLower Right\s*\(\s*([0-9\-\.]*),\s*([0-9\-\.]*).*")
     geoMatch = pattern.findall(geoText)
     # print pattern
-    print "\n"
-    print "Geodata obtained:"
-    print "-----------------"
-    print "W", geoMatch[0][0]
-    print "N", geoMatch[0][1]
-    print "E", geoMatch[0][2]
-    print "S", geoMatch[0][3]
-    print "\n"
+    print("\n")
+    print("Geodata obtained:")
+    print("-----------------")
+    print("W", geoMatch[0][0])
+    print("N", geoMatch[0][1])
+    print("E", geoMatch[0][2])
+    print("S", geoMatch[0][3])
+    print("\n")
 
     W = geoMatch[0][0]
     N = geoMatch[0][1]
     E = geoMatch[0][2]
     S = geoMatch[0][3]
 
-    print "Applying to destination:"
-    print "------------------------"
+    print("Applying to destination:")
+    print("------------------------")
     # print outputgdal
     if (not os.path.isfile(outputwsg)):
         command = 'gdal_translate -a_srs "+proj=latlong +datum=WGS84" -of GTiff -co "INTERLEAVE=PIXEL" -a_ullr ' + W + ' ' + N + ' ' + E + ' ' + S + ' ' + thresholdfile + ' ' + outputwsg
@@ -75,7 +75,7 @@ def thresholdize(inputfile, dir_base_name):
         # print command
         os.system(command)
 
-    print ""
+    print("")
     if (not os.path.isfile(outputgdal)):
         command = 'gdalwarp -s_srs EPSG:4326 -t_srs EPSG:3785 -r bilinear ' + outputwsg + ' ' + outputgdal
         logging.debug(command)
@@ -92,9 +92,9 @@ def polygonize(dir_base_name, base_name):
     outputgdal = dir_base_name + "-gdal-tmp.tif"
     # QGIS POLYGONIZE
 
-    print ""
-    print "Polygonizing (coarse):"
-    print "----------------------"
+    print("")
+    print("Polygonizing (coarse):")
+    print("----------------------")
     shapefile = dir_base_name + '.shp'
     if (not os.path.isfile(shapefile)):
         command = 'gdal_polygonize.py ' + outputgdal + ' -f "ESRI Shapefile" ' + shapefile + ' ' + base_name
@@ -105,9 +105,9 @@ def polygonize(dir_base_name, base_name):
     # Split resulting megapolygon file into smaller chunks
     # most code from: http://cosmicproject.org/OGR/cris_example_write.html
 
-    print ""
-    print "Splitting megapolygon file into chunks"
-    print "--------------------------------------"
+    print("")
+    print("Splitting megapolygon file into chunks")
+    print("--------------------------------------")
 
     #####
 
@@ -117,7 +117,7 @@ def polygonize(dir_base_name, base_name):
     # 3 open the input data source and get the layer
     inDS = driver.Open(shapefile, 0) #shows cover at given points
     if inDS is None:
-        print 'Could not open shapefile'
+        print('Could not open shapefile')
         sys.exit(1)
     inLayer = inDS.GetLayer()
 
@@ -137,7 +137,7 @@ def polygonize(dir_base_name, base_name):
             if os.path.exists(fn):driver.DeleteDataSource(fn)
             outDS = driver.CreateDataSource(fn)
             if outDS is None:
-                print 'Could not create temp shapefile'
+                print('Could not create temp shapefile')
                 sys.exit(1)
             outLayer = outDS.CreateLayer(base_name, geom_type=ogr.wkbPolygon)
 
@@ -174,18 +174,18 @@ def polygonize(dir_base_name, base_name):
     inDS.Destroy()
     outDS.Destroy() #flush out the last changes here
 
-    print ""
-    print "Produced " + str(totalsubsets) + " temporary shapefiles"
-    print ""
+    print("")
+    print("Produced " + str(totalsubsets) + " temporary shapefiles")
+    print("")
 
     return totalsubsets
 
 def simplify(path, base_name, totalsubsets):
     # R Simplification
 
-    print ""
-    print "Polygonizing (simplify):"
-    print "------------------------"
+    print("")
+    print("Polygonizing (simplify):")
+    print("------------------------")
 
     # First simplify each temporary shapefile
     currentsubset = 1
@@ -212,7 +212,7 @@ def consolidate(inputfile, path, dir_base_name, base_name):
     shapefile = dir_base_name + '.shp'
     inDS = driver.Open(shapefile, 0) #shows cover at given points
     if inDS is None:
-        print 'Could not open shapefile'
+        print('Could not open shapefile')
         sys.exit(1)
     inLayer = inDS.GetLayer()
 
@@ -223,7 +223,7 @@ def consolidate(inputfile, path, dir_base_name, base_name):
     if os.path.exists(fn):driver.DeleteDataSource(fn)
     outDS = driver.CreateDataSource(fn)
     if outDS is None:
-        print 'Could not create final shapefile'
+        print('Could not create final shapefile')
         sys.exit(1)
     outLayer = outDS.CreateLayer(base_name, geom_type=ogr.wkbPolygon)
 
@@ -326,7 +326,7 @@ def consolidate(inputfile, path, dir_base_name, base_name):
         tempfile = files[0] #dir_base_name + '-tmp-' + str(currentsubset) + '-traced.shp'
         inDS = driver.Open(tempfile, 0) #shows cover at given points
         if inDS is None:
-            print 'Could not open temporary shapefile'
+            print('Could not open temporary shapefile')
             break
         inLayer = inDS.GetLayer()
 
@@ -385,9 +385,9 @@ def consolidate(inputfile, path, dir_base_name, base_name):
 
     outDS.Destroy() #flush out the last changes here
 
-    print ""
-    print "Applying projection file to result..."
-    print "-------------------------------------"
+    print("")
+    print("Applying projection file to result...")
+    print("-------------------------------------")
     os.system("cp " + dir_base_name + ".prj " + dir_base_name + "-traced.prj")
 
 def process_file(inputfile, basedir = ""):
@@ -401,7 +401,7 @@ def process_file(inputfile, basedir = ""):
 
     gimp_path = args.gimp_path
 
-    print "\n\nProcessing file: " + inputfile
+    print("\n\nProcessing file: " + inputfile)
     # right now assuming vectorizer, simplifier and input are in the same folder
     fullpath = os.path.abspath(__file__)
 
@@ -440,9 +440,9 @@ def process_file(inputfile, basedir = ""):
 
     consolidate(inputfile, path, dir_base_name, base_name)
 
-    print ""
-    print "Creating GeoJSON output..."
-    print "--------------------------"
+    print("")
+    print("Creating GeoJSON output...")
+    print("--------------------------")
     jsonfile = dir_base_name + '-traced.json'
     shapefile = dir_base_name + '-traced.shp'
     command = 'ogr2ogr -t_srs EPSG:4326 -s_srs EPSG:3857 -f "GeoJSON" ' + jsonfile + ' ' + shapefile
@@ -451,9 +451,9 @@ def process_file(inputfile, basedir = ""):
     os.system(command)
 
     # Cleaning
-    print ""
-    print "Cleaning..."
-    print "-----------"
+    print("")
+    print("Cleaning...")
+    print("-----------")
     os.system("rm " + dir_base_name + "-gdal-tmp.tif")
     os.system("rm " + dir_base_name + "-wsg-tmp.tif")
     os.system("rm " + dir_base_name + "-threshold-tmp.tif")
@@ -488,7 +488,7 @@ def main():
     args = parser.parse_args()
     for i, (ff, inputfile) in enumerate(list_tiffs(args.inputfile)):
        process_file(ff, inputfile)
-       print('Processed %d file(s)' % (i+1))
+       print(('Processed %d file(s)' % (i+1)))
 
 if __name__ == "__main__":
     main()
