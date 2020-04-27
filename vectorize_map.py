@@ -49,22 +49,23 @@ def thresholdize(inputfile, dir_base_name):
     # first get geotiff data from original
     logging.debug( string.join(["gdalinfo", os.path.abspath(inputfile)]) )
     geoText = subprocess.Popen(["gdalinfo", os.path.abspath(inputfile)], stdout=subprocess.PIPE).communicate()[0]
-    pattern = re.compile(r"Upper Left\s*\(\s*([0-9\-\.]*),\s*([0-9\-\.]*).*\n.*\n.*\nLower Right\s*\(\s*([0-9\-\.]*),\s*([0-9\-\.]*).*")
+    pattern = re.compile(b"Upper Left\s*\(\s*([0-9\-\.]*),\s*([0-9\-\.]*).*\n.*\n.*\nLower Right\s*\(\s*([0-9\-\.]*),\s*([0-9\-\.]*).*")
     geoMatch = pattern.findall(geoText)
+
+    W = geoMatch[0][0].decode()
+    N = geoMatch[0][1].decode()
+    E = geoMatch[0][2].decode()
+    S = geoMatch[0][3].decode()
+
     # print pattern
     print("\n")
     print("Geodata obtained:")
     print("-----------------")
-    print("W", geoMatch[0][0])
-    print("N", geoMatch[0][1])
-    print("E", geoMatch[0][2])
-    print("S", geoMatch[0][3])
+    print("W", W)
+    print("N", N)
+    print("E", E)
+    print("S", S)
     print("\n")
-
-    W = geoMatch[0][0]
-    N = geoMatch[0][1]
-    E = geoMatch[0][2]
-    S = geoMatch[0][3]
 
     print("Applying to destination:")
     print("------------------------")
